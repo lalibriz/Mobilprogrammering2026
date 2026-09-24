@@ -54,3 +54,38 @@ Join our community of developers creating universal apps.
 
 - [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
 - [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+
+# KI avtale
+Avtale om bruk av KI
+1. Hva bruker vi KI til?
+KI kan brukes som hjelpemiddel i arbeidsprosessen, for eksempel til:
+
+• Oppsett og struktur
+• Forklaringer
+• Feilsøking
+• Gjennomgang av egen kode
+• Forslag til forbedringer og alternative løsninger
+
+2. Hva gjør vi selv, alltid?
+Det som skal sitte til eksamen, må dere kunne uten KI.
+
+Det gjelder spesielt:
+
+• Grunnleggende programmering
+• Forståelse av kode
+• Viktige konsepter og begreper fra kurset
+• Å kunne lese, forklare og endre kode
+• Å kunne finne og rette feil
+• Å kunne begrunne valg dere gjør i løsningen
+
+KI skal hjelpe dere å lære, ikke erstatte læringen.
+
+3. Hvordan vet vi at svaret er riktig?
+KI kan ta feil. Derfor skal dere alltid verifisere svarene.
+
+Spør:
+
+• Hvem kan bekrefte at svaret er riktig?
+• Hva kan jeg sjekke svaret mot?
+• Har jeg testet koden selv?
+• Stemmer det med pensum, dokumentasjon eller det vi har gjennomgått?
