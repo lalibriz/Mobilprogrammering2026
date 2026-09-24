@@ -1,6 +1,6 @@
-# Welcome to your Expo app 👋
+# Stocked
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+An Expo app for keeping track of what is in your fridge.
 
 ## Get started
 
