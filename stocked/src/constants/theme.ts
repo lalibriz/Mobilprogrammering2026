@@ -8,15 +8,19 @@
  */
 export const Theme = {
   // Farger
-  primary: "#1565c0",
-  primaryLight: "#e3f2fd",
-  secondary: "#1976d2",
+  primary: "#0f766e",
+  primaryLight: "#ccfbf1",
+  secondary: "#14b8a6",
   contrast: "#ffb300",
   danger: "#d32f2f",
   success: "#388e3c",
+  warning: "#f59e0b",
+  warningLight: "#fef3c7",
+  dangerLight: "#fee2e2",
+  successLight: "#dcfce7",
   muted: "#6b7280",
   border: "#d1d5db",
-  background: "#f5f7fa",
+  background: "#e8f1f2",
   surface: "#ffffff",
   text: "#111827",
   textInverted: "#ffffff",
