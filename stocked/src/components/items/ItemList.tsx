@@ -1,15 +1,20 @@
 import { Theme } from "@/constants/theme";
 import type { Item } from "@/utils/item-schema";
-import { daysUntilExpiry } from "@/utils/expiry";
+import { daysUntilExpiry, expiryStatus, type ExpiryStatus } from "@/utils/expiry";
 import { StyleSheet, Text, View } from "react-native";
 import { ItemCard } from "./ItemCard";
 
 type ItemListProps = {
   items: Item[];
   onRemove: (id: string) => void;
+  activeFilters?: ExpiryStatus[];
 };
 
-export function ItemList({ items, onRemove }: ItemListProps) {
+export function ItemList({
+  items,
+  onRemove,
+  activeFilters = [],
+}: ItemListProps) {
   if (items.length === 0) {
     return (
       <View style={styles.empty}>
@@ -18,8 +23,22 @@ export function ItemList({ items, onRemove }: ItemListProps) {
     );
   }
 
+  // Ingen aktive filtre betyr at alle varer vises
+  const visible =
+    activeFilters.length === 0
+      ? items
+      : items.filter((i) => activeFilters.includes(expiryStatus(i.expiresAt)));
+
+  if (visible.length === 0) {
+    return (
+      <View style={styles.empty}>
+        <Text style={styles.emptyText}>Ingen varer matcher filteret</Text>
+      </View>
+    );
+  }
+
   // Varene som går ut først ligger øverst
-  const sorted = [...items].sort(
+  const sorted = [...visible].sort(
     (a, b) => daysUntilExpiry(a.expiresAt) - daysUntilExpiry(b.expiresAt),
   );
 

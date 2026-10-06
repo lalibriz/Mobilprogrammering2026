@@ -1,36 +1,75 @@
 import { Theme } from "@/constants/theme";
 import type { Item } from "@/utils/item-schema";
-import { expiryStatus } from "@/utils/expiry";
-import { StyleSheet, Text, View } from "react-native";
+import { expiryStatus, type ExpiryStatus } from "@/utils/expiry";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type FridgeHeaderProps = {
   items: Item[];
+  activeFilters: ExpiryStatus[];
+  onToggleFilter: (status: ExpiryStatus) => void;
 };
 
-export function FridgeHeader({ items }: FridgeHeaderProps) {
+export function FridgeHeader({
+  items,
+  activeFilters,
+  onToggleFilter,
+}: FridgeHeaderProps) {
   const soon = items.filter((i) => expiryStatus(i.expiresAt) === "soon").length;
   const expired = items.filter(
     (i) => expiryStatus(i.expiresAt) === "expired",
   ).length;
 
+  const fresh = items.length - soon - expired;
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Mitt kjøleskap</Text>
       <View style={styles.stats}>
-        <Stat value={items.length} label="varer" />
-        <Stat value={soon} label="går snart ut" />
-        <Stat value={expired} label="utgått" />
+        <Stat
+          value={fresh}
+          label="varer"
+          active={activeFilters.includes("fresh")}
+          onPress={() => onToggleFilter("fresh")}
+        />
+        <Stat
+          value={soon}
+          label="går snart ut"
+          active={activeFilters.includes("soon")}
+          onPress={() => onToggleFilter("soon")}
+        />
+        <Stat
+          value={expired}
+          label="utgått"
+          active={activeFilters.includes("expired")}
+          onPress={() => onToggleFilter("expired")}
+        />
       </View>
     </View>
   );
 }
 
-function Stat({ value, label }: { value: number; label: string }) {
+type StatProps = {
+  value: number;
+  label: string;
+  active: boolean;
+  onPress: () => void;
+};
+
+function Stat({ value, label, active, onPress }: StatProps) {
   return (
-    <View style={styles.stat}>
-      <Text style={styles.statValue}>{value}</Text>
-      <Text style={styles.statLabel}>{label}</Text>
-    </View>
+    <Pressable
+      style={[styles.stat, active && styles.statActive]}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityState={{ selected: active }}
+    >
+      <Text style={[styles.statValue, active && styles.statTextActive]}>
+        {value}
+      </Text>
+      <Text style={[styles.statLabel, active && styles.statTextActive]}>
+        {label}
+      </Text>
+    </Pressable>
   );
 }
 
@@ -56,6 +95,12 @@ const styles = StyleSheet.create({
     padding: Theme.spacing.sm,
     borderRadius: Theme.radius.md,
     backgroundColor: "rgba(255,255,255,0.18)",
+  },
+  statActive: {
+    backgroundColor: Theme.surface,
+  },
+  statTextActive: {
+    color: Theme.primary,
   },
   statValue: {
     fontSize: Theme.fontSize.xl,
