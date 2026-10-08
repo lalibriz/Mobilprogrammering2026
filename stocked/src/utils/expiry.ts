@@ -6,10 +6,22 @@ function pad(n: number) {
   return n.toString().padStart(2, "0");
 }
 
+/** Datoen som "ÅÅÅÅ-MM-DD" (lokal tid). */
+export function formatDate(date: Date) {
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+}
+
+/** "ÅÅÅÅ-MM-DD" som midnatt i lokal tid, slik at datoen ikke flytter seg med tidssonen. */
+export function parseDate(value: string) {
+  const [year, month, day] = value.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
 /** Dagens dato + `days` dager, som "ÅÅÅÅ-MM-DD" (lokal tid). */
 export function addDays(days: number, from: Date = new Date()) {
-  const d = new Date(from.getFullYear(), from.getMonth(), from.getDate() + days);
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  return formatDate(
+    new Date(from.getFullYear(), from.getMonth(), from.getDate() + days),
+  );
 }
 
 export function daysUntilExpiry(expiresAt: string, today: Date = new Date()) {

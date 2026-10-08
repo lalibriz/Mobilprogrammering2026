@@ -1,13 +1,14 @@
 import { FridgeHeader } from "@/components/items/FridgeHeader";
-import { ItemForm } from "@/components/items/ItemForm";
 import { ItemLayout } from "@/components/items/ItemLayout";
 import { ItemList } from "@/components/items/ItemList";
+import { useItemEditor } from "@/contexts/ItemEditorContext";
 import { useItems } from "@/contexts/ItemsContext";
 import type { ExpiryStatus } from "@/utils/expiry";
 import { useState } from "react";
 
 export default function Index() {
-  const { items, add, remove } = useItems();
+  const { fridgeName, rename, items, remove } = useItems();
+  const { openEdit } = useItemEditor();
   const [activeFilters, setActiveFilters] = useState<ExpiryStatus[]>([]);
 
   const toggleFilter = (status: ExpiryStatus) =>
@@ -20,16 +21,18 @@ export default function Index() {
   return (
     <ItemLayout>
       <FridgeHeader
+        name={fridgeName}
+        onRename={rename}
         items={items}
         activeFilters={activeFilters}
         onToggleFilter={toggleFilter}
       />
       <ItemList
         items={items}
+        onEdit={openEdit}
         onRemove={remove}
         activeFilters={activeFilters}
       />
-      <ItemForm onAdd={add} />
     </ItemLayout>
   );
 }

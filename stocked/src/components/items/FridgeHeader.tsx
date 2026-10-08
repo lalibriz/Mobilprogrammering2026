@@ -1,15 +1,21 @@
+import { Icon } from "@/components/shared/Icon";
 import { Theme } from "@/constants/theme";
 import type { Item } from "@/utils/item-schema";
 import { expiryStatus, type ExpiryStatus } from "@/utils/expiry";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { useState } from "react";
+import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
 type FridgeHeaderProps = {
+  name: string;
+  onRename: (name: string) => void;
   items: Item[];
   activeFilters: ExpiryStatus[];
   onToggleFilter: (status: ExpiryStatus) => void;
 };
 
 export function FridgeHeader({
+  name,
+  onRename,
   items,
   activeFilters,
   onToggleFilter,
@@ -21,9 +27,50 @@ export function FridgeHeader({
 
   const fresh = items.length - soon - expired;
 
+  const [editingName, setEditingName] = useState(false);
+  const [draft, setDraft] = useState(name);
+
+  function startEditing() {
+    setDraft(name);
+    setEditingName(true);
+  }
+
+  function saveName() {
+    onRename(draft);
+    setEditingName(false);
+  }
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Mitt kjøleskap</Text>
+      <View style={styles.titleRow}>
+        {editingName ? (
+          <TextInput
+            style={[styles.title, styles.titleInput]}
+            value={draft}
+            onChangeText={setDraft}
+            onSubmitEditing={saveName}
+            onBlur={saveName}
+            autoFocus
+            selectTextOnFocus
+            returnKeyType="done"
+            maxLength={30}
+            accessibilityLabel="Navn på kjøleskapet"
+          />
+        ) : (
+          <>
+            <Text style={styles.title} numberOfLines={1}>
+              {name}
+            </Text>
+            <Pressable
+              accessibilityLabel="Endre navn på kjøleskapet"
+              onPress={startEditing}
+              style={({ pressed }) => [pressed && styles.pressed]}
+            >
+              <Icon name="edit" size={20} color={Theme.textInverted} />
+            </Pressable>
+          </>
+        )}
+      </View>
       <View style={styles.stats}>
         <Stat
           value={fresh}
@@ -79,6 +126,20 @@ const styles = StyleSheet.create({
     borderRadius: Theme.radius.lg,
     padding: Theme.spacing.lg,
     gap: Theme.spacing.md,
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Theme.spacing.sm,
+  },
+  titleInput: {
+    flex: 1,
+    padding: 0,
+    borderBottomWidth: 1,
+    borderBottomColor: Theme.textInverted,
+  },
+  pressed: {
+    opacity: 0.5,
   },
   title: {
     fontSize: Theme.fontSize.xl,

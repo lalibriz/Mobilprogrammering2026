@@ -1,14 +1,12 @@
+import { Icon } from "@/components/shared/Icon";
 import { Theme } from "@/constants/theme";
 import type { Item } from "@/utils/item-schema";
-import {
-  expiryLabel,
-  expiryStatus,
-  type ExpiryStatus,
-} from "@/utils/expiry";
+import { expiryLabel, expiryStatus, type ExpiryStatus } from "@/utils/expiry";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 
 type ItemCardProps = {
   item: Item;
+  onEdit: (id: string) => void;
   onRemove: (id: string) => void;
 };
 
@@ -18,7 +16,7 @@ const BADGE: Record<ExpiryStatus, { bg: string; fg: string }> = {
   fresh: { bg: Theme.successLight, fg: Theme.success },
 };
 
-export function ItemCard({ item, onRemove }: ItemCardProps) {
+export function ItemCard({ item, onEdit, onRemove }: ItemCardProps) {
   const { id, name, quantity, expiresAt } = item;
   const colors = BADGE[expiryStatus(expiresAt)];
 
@@ -35,11 +33,18 @@ export function ItemCard({ item, onRemove }: ItemCardProps) {
         </View>
       </View>
       <Pressable
+        accessibilityLabel={`Rediger ${name}`}
+        onPress={() => onEdit(id)}
+        style={({ pressed }) => [styles.action, pressed && styles.pressed]}
+      >
+        <Icon name="edit" size={20} color={Theme.muted} />
+      </Pressable>
+      <Pressable
         accessibilityLabel={`Fjern ${name}`}
         onPress={() => onRemove(id)}
-        style={({ pressed }) => [styles.remove, pressed && styles.pressed]}
+        style={({ pressed }) => [styles.action, pressed && styles.pressed]}
       >
-        <Text style={styles.removeText}>✕</Text>
+        <Icon name="remove" size={20} color={Theme.muted} />
       </Pressable>
     </View>
   );
@@ -80,12 +85,8 @@ const styles = StyleSheet.create({
     fontSize: Theme.fontSize.sm,
     fontWeight: "600",
   },
-  remove: {
+  action: {
     padding: Theme.spacing.sm,
-  },
-  removeText: {
-    fontSize: Theme.fontSize.lg,
-    color: Theme.muted,
   },
   pressed: {
     opacity: 0.5,

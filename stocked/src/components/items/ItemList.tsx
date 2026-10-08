@@ -1,17 +1,23 @@
 import { Theme } from "@/constants/theme";
 import type { Item } from "@/utils/item-schema";
-import { daysUntilExpiry, expiryStatus, type ExpiryStatus } from "@/utils/expiry";
+import {
+  daysUntilExpiry,
+  expiryStatus,
+  type ExpiryStatus,
+} from "@/utils/expiry";
 import { StyleSheet, Text, View } from "react-native";
 import { ItemCard } from "./ItemCard";
 
 type ItemListProps = {
   items: Item[];
+  onEdit: (id: string) => void;
   onRemove: (id: string) => void;
   activeFilters?: ExpiryStatus[];
 };
 
 export function ItemList({
   items,
+  onEdit,
   onRemove,
   activeFilters = [],
 }: ItemListProps) {
@@ -45,7 +51,12 @@ export function ItemList({
   return (
     <View style={styles.container}>
       {sorted.map((item) => (
-        <ItemCard key={item.id} item={item} onRemove={onRemove} />
+        <ItemCard
+          key={item.id}
+          item={item}
+          onEdit={onEdit}
+          onRemove={onRemove}
+        />
       ))}
     </View>
   );
