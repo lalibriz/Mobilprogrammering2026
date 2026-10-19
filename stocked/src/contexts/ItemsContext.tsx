@@ -1,6 +1,9 @@
 import { ITEMS } from "@/data/items";
-import type { Item } from "@/utils/item-schema";
-import { createContext, use, useState } from "react";
+import { Loading } from "@/components/shared/Loading";
+import { ItemSchema, type Item } from "@/utils/item-schema";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { createContext, use, useEffect, useState } from "react";
+import { z } from "zod";
 
 type ItemsContextData = {
   fridgeName: string;
@@ -13,9 +16,49 @@ type ItemsContextData = {
 
 const ItemsContext = createContext<ItemsContextData | null>(null);
 
+const STORAGE_KEY = "stocked:v1";
+
+const StoredSchema = z.object({
+  fridgeName: z.string(),
+  items: ItemSchema.array(),
+});
+
 export function ItemsProvider({ children }: { children: React.ReactNode }) {
   const [fridgeName, setFridgeName] = useState("Mitt kjøleskap");
   const [items, setItems] = useState<Item[]>(ITEMS);
+  const [loaded, setLoaded] = useState(false);
+
+  useEffect(() => {
+    async function load() {
+      try {
+        const raw = await AsyncStorage.getItem(STORAGE_KEY);
+
+        if (raw) {
+          const stored = StoredSchema.parse(JSON.parse(raw));
+
+          setFridgeName(stored.fridgeName);
+          setItems(stored.items);
+        }
+      } catch (error) {
+        // Korrupte eller gamle data: behold standardverdiene
+        console.error("Kunne ikke laste data:", error);
+      } finally {
+        setLoaded(true);
+      }
+    }
+
+    load();
+  }, []);
+
+  // Ikke lagre før lasting er ferdig, ellers overskrives lagrede data
+  useEffect(() => {
+    if (!loaded) return;
+
+    AsyncStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ fridgeName, items }),
+    ).catch((error) => console.error("Kunne ikke lagre data:", error));
+  }, [fridgeName, items, loaded]);
 
   function rename(name: string) {
     const trimmed = name.trim();
@@ -36,6 +79,8 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
   function remove(id: string) {
     setItems((prev) => prev.filter((item) => item.id !== id));
   }
+
+  if (!loaded) return <Loading />;
 
   return (
     <ItemsContext value={{ fridgeName, rename, items, add, update, remove }}>

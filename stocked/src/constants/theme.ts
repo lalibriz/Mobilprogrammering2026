@@ -8,10 +8,10 @@
  */
 export const Theme = {
   // Farger
-  primary: "#0f766e",
-  primaryLight: "#ccfbf1",
-  secondary: "#14b8a6",
-  contrast: "#ffb300",
+  primary: "#0a8f8a",
+  primaryLight: "#c9f5ef",
+  secondary: "#19c3b1",
+  contrast: "#ff7a59",
   danger: "#d32f2f",
   success: "#388e3c",
   warning: "#f59e0b",
@@ -19,9 +19,15 @@ export const Theme = {
   dangerLight: "#fee2e2",
   successLight: "#dcfce7",
   muted: "#6b7280",
-  border: "#d1d5db",
-  background: "#e8f1f2",
+  border: "#b6c9d6",
+  background: "#e6eafb",
+  // Soft "pill" surfaces shared by the bottom bar and the form
+  pill: "#d6dcf3",
+  raised: "#fafbff",
+  shadowTint: "60,70,140",
   surface: "#ffffff",
+  shelf: "rgba(255,255,255,0.75)",
+  shelfEdge: "#8cc9d6",
   text: "#111827",
   textInverted: "#ffffff",
 

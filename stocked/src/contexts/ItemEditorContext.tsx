@@ -14,9 +14,12 @@ import {
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type ItemEditorContextData = {
-  openAdd: () => void;
+  /** `prefill` fyller ut skjemaet på forhånd, f.eks. etter en strekkodeskanning. */
+  openAdd: (prefill?: Prefill) => void;
   openEdit: (id: string) => void;
 };
+
+export type Prefill = { name?: string; imageUrl?: string };
 
 /** Hva skjemaet gjør: null = ingenting, "new" = ny vare, ellers varen som redigeres. */
 type EditorState = null | "new" | { id: string };
@@ -42,6 +45,7 @@ export function ItemEditorProvider({
   const router = useRouter();
   const [state, setState] = useState<EditorState>(null);
   const [visible, setVisible] = useState(false);
+  const [prefill, setPrefill] = useState<Prefill>();
   const [sheetHeight, setSheetHeight] = useState(INITIAL_SHEET_HEIGHT);
   // 0 = lukket, 1 = åpen
   const [progress] = useState(() => new Animated.Value(0));
@@ -74,13 +78,17 @@ export function ItemEditorProvider({
       if (!finished) return;
       setVisible(false);
       setState(null);
+      setPrefill(undefined);
     });
   }
 
   return (
     <ItemEditorContext
       value={{
-        openAdd: () => open("new"),
+        openAdd: (next) => {
+          setPrefill(next);
+          open("new");
+        },
         openEdit: (id) => open({ id }),
       }}
     >
@@ -126,6 +134,8 @@ export function ItemEditorProvider({
           >
             <ItemForm
               editing={editing}
+              initialName={prefill?.name}
+              initialImageUrl={prefill?.imageUrl}
               onSubmit={(data) => {
                 if (editing) update(editing.id, data);
                 else add(data);
@@ -160,12 +170,12 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   backdrop: {
-    backgroundColor: "rgba(0,0,0,0.4)",
+    backgroundColor: "rgba(25,30,70,0.45)",
   },
   sheet: {
     padding: Theme.spacing.lg,
     backgroundColor: Theme.background,
-    borderTopLeftRadius: Theme.radius.lg,
-    borderTopRightRadius: Theme.radius.lg,
+    borderTopLeftRadius: 32,
+    borderTopRightRadius: 32,
   },
 });

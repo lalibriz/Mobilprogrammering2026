@@ -16,18 +16,24 @@ type BarButtonProps = {
 function BarButton({ icon, label, active = false, onPress }: BarButtonProps) {
   return (
     <Pressable
-      style={({ pressed }) => [styles.button, pressed && styles.pressed]}
+      style={styles.button}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityState={{ selected: active }}
     >
-      <Icon
-        name={icon}
-        size={26}
-        color={active ? Theme.primary : Theme.muted}
-      />
-      <Text style={[styles.label, active && styles.active]}>{label}</Text>
+      {({ pressed }) => (
+        <View style={[styles.bubble, pressed && styles.pressed]}>
+          {/* Always mounted and only faded: adding a shadow to an existing
+              rounded view drops its corners on Android */}
+          <View style={[styles.bubbleActive, { opacity: active ? 1 : 0 }]} />
+          <Icon
+            name={icon}
+            size={24}
+            color={active ? Theme.primary : Theme.muted}
+          />
+        </View>
+      )}
     </Pressable>
   );
 }
@@ -42,70 +48,84 @@ export function BottomBar() {
     <View
       style={[styles.bar, { paddingBottom: insets.bottom + Theme.spacing.sm }]}
     >
-      <BarButton
-        icon="fridge"
-        label="Hjem"
-        active={pathname === "/"}
-        onPress={() => router.navigate("/")}
-      />
-      <BarButton icon="cart" label="Kommer" />
-
-      <View style={styles.addSlot}>
-        <Pressable
-          style={({ pressed }) => [styles.add, pressed && styles.pressed]}
-          onPress={openAdd}
-          accessibilityRole="button"
-          accessibilityLabel="Legg til vare"
-        >
-          <Icon name="add" size={30} color={Theme.textInverted} />
-        </Pressable>
+      <View style={styles.pill}>
+        <BarButton
+          icon="fridge"
+          label="Hjem"
+          active={pathname === "/"}
+          onPress={() => router.navigate("/")}
+        />
+        <BarButton icon="cart" label="Handleliste (kommer)" />
       </View>
 
-      <BarButton icon="recipes" label="Kommer" />
-      <BarButton icon="settings" label="Kommer" />
+      <Pressable
+        style={({ pressed }) => [styles.add, pressed && styles.pressed]}
+        onPress={() => openAdd()}
+        accessibilityRole="button"
+        accessibilityLabel="Legg til vare"
+      >
+        <Icon name="add" size={30} color={Theme.textInverted} />
+      </Pressable>
+
+      <View style={styles.pill}>
+        <BarButton icon="recipes" label="Oppskrifter (kommer)" />
+        <BarButton icon="settings" label="Innstillinger (kommer)" />
+      </View>
     </View>
   );
 }
 
-// Alle plassene er like høye, slik at ikonene og + deler samme midtlinje
-const SLOT_HEIGHT = 60;
+const SIZE = 56;
 
 const styles = StyleSheet.create({
   bar: {
     flexDirection: "row",
     alignItems: "center",
+    gap: Theme.spacing.md,
     paddingTop: Theme.spacing.sm,
-    backgroundColor: Theme.surface,
-    borderTopWidth: 1,
-    borderTopColor: Theme.border,
+    paddingHorizontal: Theme.spacing.lg,
+    backgroundColor: Theme.background,
+  },
+  pill: {
+    flex: 1,
+    flexDirection: "row",
+    padding: Theme.spacing.xs,
+    borderRadius: 40,
+    backgroundColor: Theme.pill,
+    boxShadow: [
+      { offsetX: 0, offsetY: 6, blurRadius: 16, color: "rgba(60,70,140,0.2)" },
+      { offsetX: 0, offsetY: 2, blurRadius: 4, color: "rgba(60,70,140,0.18)", inset: true },
+    ],
   },
   button: {
     flex: 1,
-    height: SLOT_HEIGHT,
+    alignItems: "center",
+  },
+  bubble: {
+    width: SIZE,
+    height: SIZE,
+    borderRadius: SIZE / 2,
     alignItems: "center",
     justifyContent: "center",
-    gap: 2,
   },
-  label: {
-    fontSize: Theme.fontSize.sm,
-    color: Theme.muted,
-  },
-  active: {
-    color: Theme.primary,
-  },
-  addSlot: {
-    flex: 1,
-    height: SLOT_HEIGHT,
-    alignItems: "center",
-    justifyContent: "center",
+  bubbleActive: {
+    ...StyleSheet.absoluteFill,
+    borderRadius: SIZE / 2,
+    backgroundColor: Theme.raised,
+    boxShadow: [
+      { offsetX: 0, offsetY: 4, blurRadius: 10, color: "rgba(60,70,140,0.3)" },
+    ],
   },
   add: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
+    width: SIZE + 8,
+    height: SIZE + 8,
+    borderRadius: (SIZE + 8) / 2,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: Theme.primary,
+    backgroundColor: Theme.contrast,
+    boxShadow: [
+      { offsetX: 0, offsetY: 8, blurRadius: 16, color: "rgba(255,122,89,0.45)" },
+    ],
   },
   pressed: {
     opacity: 0.6,

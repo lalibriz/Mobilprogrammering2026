@@ -1,7 +1,7 @@
 import { Icon } from "@/components/shared/Icon";
 import { Theme } from "@/constants/theme";
 import type { Item } from "@/utils/item-schema";
-import { expiryStatus, type ExpiryStatus } from "@/utils/expiry";
+import { expiryStatus } from "@/utils/expiry";
 import { useState } from "react";
 import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
 
@@ -9,22 +9,14 @@ type FridgeHeaderProps = {
   name: string;
   onRename: (name: string) => void;
   items: Item[];
-  activeFilters: ExpiryStatus[];
-  onToggleFilter: (status: ExpiryStatus) => void;
 };
 
-export function FridgeHeader({
-  name,
-  onRename,
-  items,
-  activeFilters,
-  onToggleFilter,
-}: FridgeHeaderProps) {
+/** Digital display on the fridge door: name plus three LED counters. */
+export function FridgeHeader({ name, onRename, items }: FridgeHeaderProps) {
   const soon = items.filter((i) => expiryStatus(i.expiresAt) === "soon").length;
   const expired = items.filter(
     (i) => expiryStatus(i.expiresAt) === "expired",
   ).length;
-
   const fresh = items.length - soon - expired;
 
   const [editingName, setEditingName] = useState(false);
@@ -64,112 +56,111 @@ export function FridgeHeader({
             <Pressable
               accessibilityLabel="Endre navn på kjøleskapet"
               onPress={startEditing}
+              hitSlop={12}
               style={({ pressed }) => [pressed && styles.pressed]}
             >
-              <Icon name="edit" size={20} color={Theme.textInverted} />
+              <Icon name="edit" size={16} color={LABEL} />
             </Pressable>
           </>
         )}
       </View>
       <View style={styles.stats}>
-        <Stat
-          value={fresh}
-          label="varer"
-          active={activeFilters.includes("fresh")}
-          onPress={() => onToggleFilter("fresh")}
-        />
-        <Stat
-          value={soon}
-          label="går snart ut"
-          active={activeFilters.includes("soon")}
-          onPress={() => onToggleFilter("soon")}
-        />
-        <Stat
-          value={expired}
-          label="utgått"
-          active={activeFilters.includes("expired")}
-          onPress={() => onToggleFilter("expired")}
-        />
+        <Stat value={fresh} label="Varer" />
+        <Stat value={soon} label="Snart ute" />
+        <Stat value={expired} label="Utgått" />
       </View>
+      <View style={styles.divider} />
+      {/* Glass reflection across the panel */}
+      <View pointerEvents="none" style={styles.sheen} />
     </View>
   );
 }
 
-type StatProps = {
-  value: number;
-  label: string;
-  active: boolean;
-  onPress: () => void;
-};
+// Blue LED digits on black glass, like a built-in fridge control panel
+const LED = "#3da5ff";
+const LABEL = "rgba(255,255,255,0.75)";
 
-function Stat({ value, label, active, onPress }: StatProps) {
+function Stat({ value, label }: { value: number; label: string }) {
   return (
-    <Pressable
-      style={[styles.stat, active && styles.statActive]}
-      onPress={onPress}
-      accessibilityRole="button"
-      accessibilityState={{ selected: active }}
-    >
-      <Text style={[styles.statValue, active && styles.statTextActive]}>
-        {value}
-      </Text>
-      <Text style={[styles.statLabel, active && styles.statTextActive]}>
-        {label}
-      </Text>
-    </Pressable>
+    <View style={styles.stat}>
+      <Text style={styles.statLabel}>{label}</Text>
+      <Text style={styles.statValue}>{value}</Text>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Theme.primary,
+    marginTop: 4,
+    overflow: "hidden",
+    backgroundColor: "#0a0c0f",
+    experimental_backgroundImage: "linear-gradient(160deg, #1a1e23, #07090b 60%)",
     borderRadius: Theme.radius.lg,
-    padding: Theme.spacing.lg,
-    gap: Theme.spacing.md,
+    paddingHorizontal: Theme.spacing.lg,
+    paddingTop: Theme.spacing.md,
+    paddingBottom: Theme.spacing.sm,
+    gap: Theme.spacing.sm,
+    // Light steel bezel around the glass
+    borderWidth: 3,
+    borderColor: "#d3d9de",
+    boxShadow: [
+      { offsetX: 0, offsetY: 2, blurRadius: 6, color: "rgba(0,0,0,0.7)", inset: true },
+      { offsetX: 0, offsetY: 2, blurRadius: 6, color: "rgba(40,50,60,0.35)" },
+    ],
   },
   titleRow: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: Theme.spacing.sm,
   },
   titleInput: {
     flex: 1,
     padding: 0,
+    textAlign: "center",
     borderBottomWidth: 1,
-    borderBottomColor: Theme.textInverted,
+    borderBottomColor: LABEL,
   },
   pressed: {
     opacity: 0.5,
   },
   title: {
-    fontSize: Theme.fontSize.xl,
-    fontWeight: "700",
-    color: Theme.textInverted,
+    fontSize: Theme.fontSize.md,
+    color: LABEL,
+    letterSpacing: 0.5,
   },
   stats: {
     flexDirection: "row",
-    gap: Theme.spacing.sm,
   },
   stat: {
     flex: 1,
     alignItems: "center",
-    padding: Theme.spacing.sm,
-    borderRadius: Theme.radius.md,
-    backgroundColor: "rgba(255,255,255,0.18)",
-  },
-  statActive: {
-    backgroundColor: Theme.surface,
-  },
-  statTextActive: {
-    color: Theme.primary,
-  },
-  statValue: {
-    fontSize: Theme.fontSize.xl,
-    fontWeight: "700",
-    color: Theme.textInverted,
   },
   statLabel: {
     fontSize: Theme.fontSize.sm,
-    color: Theme.textInverted,
+    color: LABEL,
+  },
+  statValue: {
+    fontSize: 40,
+    lineHeight: 48,
+    fontWeight: "300",
+    fontVariant: ["tabular-nums"],
+    color: LED,
+    textShadowColor: "#1e7bff",
+    textShadowRadius: 10,
+  },
+  divider: {
+    height: 1,
+    marginHorizontal: Theme.spacing.xl,
+    backgroundColor: "rgba(255,255,255,0.35)",
+  },
+  sheen: {
+    position: "absolute",
+    top: -20,
+    bottom: -20,
+    left: "10%",
+    width: 70,
+    backgroundColor: "rgba(255,255,255,0.05)",
+    transform: [{ rotate: "15deg" }],
   },
 });

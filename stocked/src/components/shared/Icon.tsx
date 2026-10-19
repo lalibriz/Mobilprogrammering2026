@@ -12,6 +12,7 @@ const ICONS = {
   barcode: { ios: "barcode.viewfinder", android: "barcode_scanner" },
   cart: { ios: "cart", android: "shopping_cart" },
   recipes: { ios: "fork.knife", android: "restaurant" },
+  calendar: { ios: "calendar", android: "calendar_month" },
   settings: { ios: "gearshape", android: "settings" },
 } as const;
 
@@ -31,6 +32,7 @@ export function Icon({ name, size = 24, color }: IconProps) {
       name={{ ios, android, web: android }}
       size={size}
       tintColor={color}
+      style={{ alignItems: "center", justifyContent: "center" }}
     />
   );
 }

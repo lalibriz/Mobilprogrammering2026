@@ -19,6 +19,7 @@ export const ItemSchema = z.object({
     .int("Antall må være et helt tall")
     .positive("Antall må være minst 1"),
   expiresAt: z.iso.date("Dato må være på formen ÅÅÅÅ-MM-DD"),
+  imageUrl: z.url().optional(),
 });
 
 export type Item = z.infer<typeof ItemSchema>;

@@ -21,6 +21,9 @@ type ItemFormProps = {
   onCancel?: () => void;
   /** Valgfri måte å legge til en vare på; vises bare når en ny vare legges til. */
   onScan?: () => void;
+  /** Forhåndsutfylt navn for en ny vare, f.eks. fra en skannet strekkode. */
+  initialName?: string;
+  initialImageUrl?: string;
 };
 
 const NewItemSchema = ItemSchema.omit({ id: true });
@@ -68,8 +71,10 @@ export function ItemForm({
   editing,
   onCancel,
   onScan,
+  initialName,
+  initialImageUrl,
 }: ItemFormProps) {
-  const [name, setName] = useState(editing?.name ?? "");
+  const [name, setName] = useState(editing?.name ?? initialName ?? "");
   const [quantity, setQuantity] = useState(
     editing ? String(editing.quantity) : "1",
   );
@@ -87,6 +92,7 @@ export function ItemForm({
       name: name.trim(),
       quantity: Number(quantity),
       expiresAt,
+      imageUrl: editing?.imageUrl ?? initialImageUrl,
     });
 
     if (!result.success) {
@@ -166,42 +172,44 @@ export function ItemForm({
   );
 }
 
+// Same soft pill language as the bottom bar: inset wells, raised bubbles
+const WELL_SHADOW = `inset 0px 2px 4px rgba(${Theme.shadowTint},0.18)`;
+const RAISED_SHADOW = [
+  { offsetX: 0, offsetY: 4, blurRadius: 10, color: `rgba(${Theme.shadowTint},0.28)` },
+];
+
 const styles = StyleSheet.create({
   container: {
-    gap: Theme.spacing.sm,
-    padding: Theme.spacing.lg,
-    borderRadius: Theme.radius.lg,
-    backgroundColor: Theme.surface,
-    borderWidth: 1,
-    borderColor: Theme.border,
+    gap: Theme.spacing.md,
   },
   title: {
-    fontSize: Theme.fontSize.lg,
+    fontSize: Theme.fontSize.xl,
     fontWeight: "700",
     color: Theme.text,
   },
   row: {
     flexDirection: "row",
-    gap: Theme.spacing.sm,
+    gap: Theme.spacing.md,
   },
   input: {
-    borderWidth: 1,
-    borderColor: Theme.border,
-    borderRadius: Theme.radius.sm,
-    padding: Theme.spacing.md,
-    backgroundColor: Theme.background,
+    minHeight: 48,
+    borderRadius: 24,
+    paddingHorizontal: Theme.spacing.lg,
+    backgroundColor: Theme.pill,
+    boxShadow: WELL_SHADOW,
     color: Theme.text,
   },
   field: {
     gap: Theme.spacing.xs,
   },
   label: {
+    marginLeft: Theme.spacing.md,
     fontSize: Theme.fontSize.sm,
     fontWeight: "600",
     color: Theme.muted,
   },
   quantity: {
-    width: 150,
+    width: 168,
   },
   stepper: {
     flexDirection: "row",
@@ -214,12 +222,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 0,
   },
   step: {
-    width: 36,
+    width: 44,
+    height: 44,
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: Theme.spacing.md,
-    borderRadius: Theme.radius.sm,
-    backgroundColor: Theme.primaryLight,
+    borderRadius: 22,
+    backgroundColor: Theme.raised,
+    boxShadow: RAISED_SHADOW,
   },
   stepText: {
     fontSize: Theme.fontSize.lg,
@@ -231,34 +240,42 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   error: {
+    marginLeft: Theme.spacing.md,
     color: Theme.danger,
     fontSize: Theme.fontSize.sm,
   },
   button: {
-    backgroundColor: Theme.primary,
-    padding: Theme.spacing.md,
-    borderRadius: Theme.radius.md,
+    minHeight: 56,
+    justifyContent: "center",
     alignItems: "center",
+    borderRadius: 28,
+    backgroundColor: Theme.contrast,
+    boxShadow: [
+      { offsetX: 0, offsetY: 8, blurRadius: 16, color: "rgba(255,122,89,0.45)" },
+    ],
   },
   buttonText: {
     color: Theme.textInverted,
+    fontSize: Theme.fontSize.lg,
     fontWeight: "700",
   },
   scan: {
+    minHeight: 48,
     flexDirection: "row",
     justifyContent: "center",
     gap: Theme.spacing.sm,
-    padding: Theme.spacing.md,
-    borderRadius: Theme.radius.md,
     alignItems: "center",
-    backgroundColor: Theme.primaryLight,
+    borderRadius: 24,
+    backgroundColor: Theme.raised,
+    boxShadow: RAISED_SHADOW,
   },
   scanText: {
     color: Theme.primary,
     fontWeight: "700",
   },
   cancel: {
-    padding: Theme.spacing.md,
+    minHeight: 44,
+    justifyContent: "center",
     alignItems: "center",
   },
   cancelText: {

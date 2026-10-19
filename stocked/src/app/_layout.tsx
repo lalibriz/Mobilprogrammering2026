@@ -1,4 +1,5 @@
 import { BottomBar } from "@/components/shared/BottomBar";
+import { FridgeDoorIntro } from "@/components/shared/FridgeDoorIntro";
 import { ItemEditorProvider } from "@/contexts/ItemEditorContext";
 import { ItemsProvider } from "@/contexts/ItemsContext";
 import { Stack } from "expo-router";
@@ -11,6 +12,7 @@ export default function RootLayout() {
         <View style={{ flex: 1 }}>
           <Stack screenOptions={{ headerShown: false, animation: "fade" }} />
           <BottomBar />
+          <FridgeDoorIntro />
         </View>
       </ItemEditorProvider>
     </ItemsProvider>
