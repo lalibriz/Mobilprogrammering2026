@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { Theme } from "@/constants/theme";
 import {
@@ -10,12 +10,14 @@ type Props = {
   items: ShoppingItemData[];
   onToggle: (id: string) => void;
   onRemove: (id: string) => void;
+  onClear: () => void;
 };
 
 export function ShoppingList({
   items,
   onToggle,
   onRemove,
+  onClear,
 }: Props) {
   const remaining = items.filter(
     (item) => !item.checked
@@ -28,29 +30,43 @@ export function ShoppingList({
         <Text style={styles.count}>{remaining} igjen</Text>
       </View>
 
-      {items.length === 0 ? (
-        <View style={styles.empty}>
-          <Text style={styles.emptyTitle}>
-            Handlelisten er tom
-          </Text>
-          <Text style={styles.emptyText}>
-            Søk etter en vare ovenfor for å legge den til.
-          </Text>
-        </View>
-      ) : (
-        <View style={styles.list}>
-          {items.map((item) => (
-            <ShoppingItem
-              key={item.id}
-              item={item}
-              onToggle={onToggle}
-              onRemove={onRemove}
-            />
-          ))}
-        </View>
-      )}
+
+{items.length === 0 ? (
+  <View style={styles.empty}>
+    <Text style={styles.emptyTitle}>
+      Handlelisten er tom
+    </Text>
+    <Text style={styles.emptyText}>
+      Søk etter en vare ovenfor for å legge den til.
+    </Text>
+  </View>
+) : (
+  <>
+    <View style={styles.list}>
+      {items.map((item) => (
+        <ShoppingItem
+          key={item.id}
+          item={item}
+          onToggle={onToggle}
+          onRemove={onRemove}
+        />
+      ))}
     </View>
-  );
+
+    <Pressable
+      style={styles.clearButton}
+      onPress={onClear}
+      accessibilityRole="button"
+      accessibilityLabel="Tøm handleliste"
+    >
+      <Text style={styles.clearText}>
+        Tøm handleliste
+      </Text>
+    </Pressable>
+  </>
+)}
+</View>
+);
 }
 
 const styles = StyleSheet.create({
@@ -94,4 +110,18 @@ const styles = StyleSheet.create({
     borderRadius: Theme.radius.xl,
     paddingHorizontal: Theme.spacing.lg,
   },
+  clearButton: {
+  backgroundColor: Theme.surface,
+  borderWidth: 1,
+  borderColor: Theme.danger,
+  borderRadius: Theme.radius.md,
+  padding: Theme.spacing.md,
+  alignItems: "center",
+},
+
+clearText: {
+  color: Theme.danger,
+  fontWeight: "600",
+  fontSize: 15,
+},
 });

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -8,12 +8,11 @@ import {
   View,
 } from "react-native";
 
-import {
-  FoodProduct,
-  searchProducts,
-} from "@/utils/open-food-facts";
-
 import { Theme } from "@/constants/theme";
+import {
+  searchProducts,
+  type FoodProduct,
+} from "@/utils/open-food-facts";
 
 type Props = {
   onAdd: (product: FoodProduct) => void;
@@ -23,57 +22,40 @@ export function ShoppingSearch({ onAdd }: Props) {
   const [query, setQuery] = useState("");
   const [products, setProducts] = useState<FoodProduct[]>([]);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
+  const [message, setMessage] = useState("");
 
-  useEffect(() => {
-    let active = true;
-
-    if (query.trim().length < 2) {
-      setProducts([]);
-      setLoading(false);
-      setError(false);
-      return;
-    }
+  async function handleSearch() {
+    if (query.trim().length < 2 || loading) return;
 
     setLoading(true);
-    setError(false);
+    setMessage("");
+    setProducts([]);
 
-    const timer = setTimeout(async () => {
-      try {
-        const results = await searchProducts(query);
+    try {
+      const results = await searchProducts(query.trim());
+      setProducts(results.slice(0, 8));
 
-        if (active) {
-          setProducts(results.slice(0, 8));
-        }
-      } catch {
-        if (active) {
-          setProducts([]);
-          setError(true);
-        }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
+      if (results.length === 0) {
+        setMessage("Ingen produkter funnet.");
       }
-    }, 500);
-
-    return () => {
-      active = false;
-      clearTimeout(timer);
-    };
-  }, [query]);
+    } catch (error) {
+      console.error("Feil ved produktsøk:", error);
+      setMessage("Søket feilet. Sjekk terminalen.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
   function addProduct(product: FoodProduct) {
     onAdd(product);
     setQuery("");
     setProducts([]);
+    setMessage("");
   }
 
   return (
     <View style={styles.container}>
-      <Text style={styles.heading}>
-        Legg til varer
-      </Text>
+      <Text style={styles.heading}>Legg til varer</Text>
 
       <TextInput
         style={styles.input}
@@ -81,41 +63,47 @@ export function ShoppingSearch({ onAdd }: Props) {
         placeholderTextColor={Theme.muted}
         value={query}
         onChangeText={setQuery}
+        onSubmitEditing={handleSearch}
+        returnKeyType="search"
       />
+
+      <Pressable
+        style={styles.button}
+        onPress={handleSearch}
+        disabled={loading}
+      >
+        <Text style={styles.buttonText}>Søk</Text>
+      </Pressable>
 
       {loading && (
         <ActivityIndicator color={Theme.primary} />
       )}
 
-      {error && (
-        <Text style={styles.message}>
-          Kunne ikke hente varer. Prøv igjen.
-        </Text>
+      {!!message && (
+        <Text style={styles.message}>{message}</Text>
       )}
 
-      {!loading &&
-        !error &&
-        products.map((product, index) => (
-          <Pressable
-            key={`${product.code}-${index}`}
-            style={styles.product}
-            onPress={() => addProduct(product)}
-          >
-            <View style={styles.productInfo}>
-              <Text style={styles.productName}>
-                {product.product_name}
+      {products.map((product, index) => (
+        <Pressable
+          key={`${product.code}-${index}`}
+          style={styles.product}
+          onPress={() => addProduct(product)}
+        >
+          <View style={styles.productInfo}>
+            <Text style={styles.productName}>
+              {product.product_name}
+            </Text>
+
+            {!!product.brands && (
+              <Text style={styles.brand}>
+                {product.brands}
               </Text>
+            )}
+          </View>
 
-              {!!product.brands && (
-                <Text style={styles.brand}>
-                  {product.brands}
-                </Text>
-              )}
-            </View>
-
-            <Text style={styles.addText}>+ Legg til</Text>
-          </Pressable>
-        ))}
+          <Text style={styles.addText}>+ Legg til</Text>
+        </Pressable>
+      ))}
     </View>
   );
 }
@@ -134,12 +122,22 @@ const styles = StyleSheet.create({
   },
   input: {
     backgroundColor: Theme.background,
-    borderColor: Theme.border,
     borderWidth: 1,
+    borderColor: Theme.border,
     borderRadius: Theme.radius.md,
     padding: Theme.spacing.md,
     color: Theme.text,
     fontSize: 16,
+  },
+  button: {
+    backgroundColor: Theme.primary,
+    padding: Theme.spacing.md,
+    borderRadius: Theme.radius.md,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: Theme.textInverted,
+    fontWeight: "700",
   },
   product: {
     flexDirection: "row",
@@ -154,7 +152,6 @@ const styles = StyleSheet.create({
   productName: {
     color: Theme.text,
     fontSize: 16,
-    fontWeight: "500",
   },
   brand: {
     color: Theme.muted,
@@ -163,10 +160,9 @@ const styles = StyleSheet.create({
   addText: {
     color: Theme.primary,
     fontWeight: "700",
-    marginLeft: 8,
   },
   message: {
-    color: Theme.muted,
-    fontSize: 14,
+    color: Theme.danger,
+    fontSize: Theme.fontSize.md,
   },
 });
