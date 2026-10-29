@@ -172,12 +172,6 @@ export function ItemForm({
   );
 }
 
-// Same soft pill language as the bottom bar: inset wells, raised bubbles
-const WELL_SHADOW = `inset 0px 2px 4px rgba(${Theme.shadowTint},0.18)`;
-const RAISED_SHADOW = [
-  { offsetX: 0, offsetY: 4, blurRadius: 10, color: `rgba(${Theme.shadowTint},0.28)` },
-];
-
 const styles = StyleSheet.create({
   container: {
     gap: Theme.spacing.md,
@@ -196,7 +190,7 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     paddingHorizontal: Theme.spacing.lg,
     backgroundColor: Theme.pill,
-    boxShadow: WELL_SHADOW,
+    boxShadow: Theme.shadow.well,
     color: Theme.text,
   },
   field: {
@@ -228,7 +222,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     borderRadius: 22,
     backgroundColor: Theme.raised,
-    boxShadow: RAISED_SHADOW,
+    boxShadow: Theme.shadow.raised,
   },
   stepText: {
     fontSize: Theme.fontSize.lg,
@@ -250,9 +244,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 28,
     backgroundColor: Theme.contrast,
-    boxShadow: [
-      { offsetX: 0, offsetY: 8, blurRadius: 16, color: "rgba(255,122,89,0.45)" },
-    ],
+    boxShadow: Theme.shadow.button,
   },
   buttonText: {
     color: Theme.textInverted,
@@ -267,7 +259,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 24,
     backgroundColor: Theme.raised,
-    boxShadow: RAISED_SHADOW,
+    boxShadow: Theme.shadow.raised,
   },
   scanText: {
     color: Theme.primary,
