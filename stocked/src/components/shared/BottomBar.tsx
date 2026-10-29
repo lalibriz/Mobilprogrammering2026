@@ -12,7 +12,6 @@ type BarButtonProps = {
   onPress?: () => void;
 };
 
-/** Knappene som ikke har noen funksjon ennå, bruker bare denne uten onPress. */
 function BarButton({ icon, label, active = false, onPress }: BarButtonProps) {
   return (
     <Pressable
@@ -55,7 +54,12 @@ export function BottomBar() {
           active={pathname === "/"}
           onPress={() => router.navigate("/")}
         />
-        <BarButton icon="cart" label="Handleliste (kommer)" />
+        <BarButton
+          icon="cart"
+          label="Handleliste"
+          active={pathname === "/shopping"}
+          onPress={() => router.navigate("/shopping")}
+        />
       </View>
 
       <Pressable
@@ -68,8 +72,18 @@ export function BottomBar() {
       </Pressable>
 
       <View style={styles.pill}>
-        <BarButton icon="recipes" label="Oppskrifter (kommer)" />
-        <BarButton icon="settings" label="Innstillinger (kommer)" />
+        <BarButton
+          icon="recipes"
+          label="Oppskrifter"
+          active={pathname === "/recipes"}
+          onPress={() => router.navigate("/recipes")}
+        />
+        <BarButton
+          icon="settings"
+          label="Innstillinger"
+          active={pathname === "/settings"}
+          onPress={() => router.navigate("/settings")}
+        />
       </View>
     </View>
   );
@@ -93,8 +107,8 @@ const styles = StyleSheet.create({
     borderRadius: 40,
     backgroundColor: Theme.pill,
     boxShadow: [
-      { offsetX: 0, offsetY: 6, blurRadius: 16, color: "rgba(60,70,140,0.2)" },
-      { offsetX: 0, offsetY: 2, blurRadius: 4, color: "rgba(60,70,140,0.18)", inset: true },
+      { offsetX: 0, offsetY: 6, blurRadius: 16, color: "rgba(1,42,51,0.14)" },
+      { offsetX: 0, offsetY: 2, blurRadius: 4, color: "rgba(1,42,51,0.14)", inset: true },
     ],
   },
   button: {
@@ -113,7 +127,7 @@ const styles = StyleSheet.create({
     borderRadius: SIZE / 2,
     backgroundColor: Theme.raised,
     boxShadow: [
-      { offsetX: 0, offsetY: 4, blurRadius: 10, color: "rgba(60,70,140,0.3)" },
+      { offsetX: 0, offsetY: 4, blurRadius: 10, color: "rgba(1,42,51,0.22)" },
     ],
   },
   add: {
@@ -124,7 +138,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     backgroundColor: Theme.contrast,
     boxShadow: [
-      { offsetX: 0, offsetY: 8, blurRadius: 16, color: "rgba(255,122,89,0.45)" },
+      { offsetX: 0, offsetY: 8, blurRadius: 16, color: "rgba(38,8,3,0.35)" },
     ],
   },
   pressed: {

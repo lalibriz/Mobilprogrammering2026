@@ -1,37 +1,27 @@
+import { Icon } from "@/components/shared/Icon";
 import { Theme } from "@/constants/theme";
 import { formatDate, parseDate } from "@/utils/expiry";
 import { DateTimePicker } from "@expo/ui/community/datetime-picker";
-import { CalendarSheet } from "@/components/items/CalendarSheet";
-import { Icon } from "@/components/shared/Icon";
 import { useState } from "react";
-import {
-  Platform,
-  Pressable,
-  StyleSheet,
-  Text,
-  View,
-  type StyleProp,
-  type ViewStyle,
-} from "react-native";
+import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
 
 type DateFieldProps = {
   /** "ÅÅÅÅ-MM-DD" */
   value: string;
   onChange: (value: string) => void;
-  style?: StyleProp<ViewStyle>;
 };
 
 /**
- * Datovelger med innebygd kalender. iOS viser den kompakte velgeren direkte i
- * feltet. Android viser feltet som en knapp som åpner kalenderdialogen.
+ * Datovelger. iOS viser den kompakte velgeren direkte i feltet. Android viser
+ * feltet som en knapp som åpner kalenderdialogen.
  */
-export function DateField({ value, onChange, style }: DateFieldProps) {
+export function DateField({ value, onChange }: DateFieldProps) {
   const [open, setOpen] = useState(false);
   const date = parseDate(value);
 
   if (Platform.OS === "ios") {
     return (
-      <View style={[styles.field, styles.inline, style]}>
+      <View style={[styles.field, styles.inline]}>
         <DateTimePicker
           value={date}
           mode="date"
@@ -44,11 +34,14 @@ export function DateField({ value, onChange, style }: DateFieldProps) {
     );
   }
 
-  // Android and web: our own calendar sheet in the same style as the form
   return (
     <>
       <Pressable
-        style={({ pressed }) => [styles.field, styles.button, style, pressed && styles.pressed]}
+        style={({ pressed }) => [
+          styles.field,
+          styles.button,
+          pressed && styles.pressed,
+        ]}
         onPress={() => setOpen(true)}
         accessibilityRole="button"
         accessibilityLabel="Velg utløpsdato"
@@ -63,13 +56,15 @@ export function DateField({ value, onChange, style }: DateFieldProps) {
         <Icon name="calendar" size={18} color={Theme.primary} />
       </Pressable>
       {open ? (
-        <CalendarSheet
-          value={value}
-          onChange={(next) => {
-            onChange(next);
+        <DateTimePicker
+          value={date}
+          mode="date"
+          accentColor={Theme.primary}
+          onValueChange={(_, picked) => {
+            onChange(formatDate(picked));
             setOpen(false);
           }}
-          onClose={() => setOpen(false)}
+          onDismiss={() => setOpen(false)}
         />
       ) : null}
     </>
@@ -84,20 +79,18 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     paddingHorizontal: Theme.spacing.lg,
     backgroundColor: Theme.pill,
-    boxShadow: [
-      { offsetX: 0, offsetY: 2, blurRadius: 4, color: `rgba(${Theme.shadowTint},0.18)`, inset: true },
-    ],
+    boxShadow: Theme.shadow.well,
   },
   button: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
   },
-  pressed: {
-    opacity: 0.7,
-  },
   inline: {
     alignItems: "flex-start",
+  },
+  pressed: {
+    opacity: 0.7,
   },
   text: {
     color: Theme.text,

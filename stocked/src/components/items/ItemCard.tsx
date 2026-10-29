@@ -1,13 +1,8 @@
 import { Icon } from "@/components/shared/Icon";
 import { Theme } from "@/constants/theme";
+import { expiryLabel, expiryStatus, type ExpiryStatus } from "@/utils/expiry";
 import type { Item } from "@/utils/item-schema";
-import {
-  daysUntilExpiry,
-  expiryStatus,
-  type ExpiryStatus,
-} from "@/utils/expiry";
 import { Image, Pressable, StyleSheet, Text, View } from "react-native";
-import Animated, { FadeIn } from "react-native-reanimated";
 
 type ItemCardProps = {
   item: Item;
@@ -15,136 +10,135 @@ type ItemCardProps = {
   onRemove: (id: string) => void;
 };
 
-const BADGE: Record<ExpiryStatus, { bg: string; fg: string }> = {
-  expired: { bg: Theme.dangerLight, fg: Theme.danger },
-  soon: { bg: Theme.warningLight, fg: "#b45309" },
-  fresh: { bg: Theme.successLight, fg: Theme.success },
-};
+const COLORS: Record<ExpiryStatus, { accent: string; bg: string; fg: string }> =
+  {
+    expired: {
+      accent: Theme.danger,
+      bg: Theme.dangerLight,
+      fg: Theme.danger,
+    },
+    soon: {
+      accent: Theme.warning,
+      bg: Theme.warningLight,
+      fg: Theme.warningDark,
+    },
+    fresh: {
+      accent: Theme.success,
+      bg: Theme.successLight,
+      fg: Theme.success,
+    },
+  };
 
-// Short enough to fit one line on a three-per-shelf tile
-function shortLabel(expiresAt: Item["expiresAt"]) {
-  const d = daysUntilExpiry(expiresAt);
-  if (d < 0) return "Utgått";
-  if (d === 0) return "I dag";
-  if (d === 1) return "I morgen";
-  return `${d} dager`;
-}
-
-const JARS = ["#ffb020", "#ff6b6b", "#2ecc8f", "#2fa8f0", "#8f7bff", "#ff8a4c"];
-
-/** A product standing on a glass shelf. Tap to edit, × to remove. */
 export function ItemCard({ item, onEdit, onRemove }: ItemCardProps) {
   const { id, name, quantity, expiresAt, imageUrl } = item;
-  const colors = BADGE[expiryStatus(expiresAt)];
-  const jar = JARS[name.charCodeAt(0) % JARS.length];
+  const colors = COLORS[expiryStatus(expiresAt)];
 
   return (
-    <Animated.View entering={FadeIn.duration(200)} style={styles.slot}>
+    <View style={styles.container}>
+      <View style={[styles.accent, { backgroundColor: colors.accent }]} />
       <Pressable
         accessibilityLabel={`Rediger ${name}`}
         onPress={() => onEdit(id)}
-        style={({ pressed }) => [styles.tile, pressed && styles.pressed]}
+        style={({ pressed }) => [styles.main, pressed && styles.pressed]}
       >
-        {imageUrl ? (
-          <Image source={{ uri: imageUrl }} style={styles.image} />
-        ) : (
-          <View style={[styles.jar, { backgroundColor: jar }]}>
-            <Text style={styles.jarLetter}>{name.charAt(0).toUpperCase()}</Text>
-            <View style={styles.jarShine} />
-          </View>
-        )}
-        <Text style={styles.name} numberOfLines={1}>
-          {name}
-        </Text>
-        <Text style={styles.quantity}>× {quantity}</Text>
-        <View style={[styles.badge, { backgroundColor: colors.bg }]}>
-          <Text style={[styles.badgeText, { color: colors.fg }]} numberOfLines={1}>
-            {shortLabel(expiresAt)}
+        <View style={styles.thumb}>
+          {imageUrl ? (
+            <Image source={{ uri: imageUrl }} style={styles.image} />
+          ) : (
+            <Text style={styles.initial}>{name.charAt(0).toUpperCase()}</Text>
+          )}
+        </View>
+        <View style={styles.info}>
+          <Text style={styles.name} numberOfLines={1}>
+            {name} <Text style={styles.quantity}>× {quantity}</Text>
           </Text>
+          <View style={[styles.badge, { backgroundColor: colors.bg }]}>
+            <Text style={[styles.badgeText, { color: colors.fg }]}>
+              {expiryLabel(expiresAt)}
+            </Text>
+          </View>
         </View>
       </Pressable>
       <Pressable
         accessibilityLabel={`Fjern ${name}`}
         onPress={() => onRemove(id)}
-        hitSlop={12}
         style={({ pressed }) => [styles.remove, pressed && styles.pressed]}
       >
-        <Icon name="remove" size={12} color={Theme.textInverted} />
+        <Icon name="remove" size={14} color={Theme.muted} />
       </Pressable>
-    </Animated.View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  slot: {
-    flex: 1,
-  },
-  tile: {
+  container: {
+    flexDirection: "row",
     alignItems: "center",
-    gap: 2,
-    paddingHorizontal: 4,
+    overflow: "hidden",
+    borderRadius: Theme.radius.xl,
+    backgroundColor: Theme.surface,
+    boxShadow: Theme.shadow.card,
   },
-  image: {
+  accent: {
+    alignSelf: "stretch",
+    width: 6,
+  },
+  main: {
+    flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Theme.spacing.md,
+    padding: Theme.spacing.md,
+  },
+  thumb: {
     width: 56,
     height: 56,
-    resizeMode: "contain",
-  },
-  jar: {
-    width: 56,
-    height: 56,
-    borderRadius: 14,
+    borderRadius: Theme.radius.lg,
     alignItems: "center",
     justifyContent: "center",
     overflow: "hidden",
-    boxShadow: [
-      { offsetX: 0, offsetY: 4, blurRadius: 6, color: "rgba(40,70,90,0.35)" },
-      { offsetX: 0, offsetY: -4, blurRadius: 6, color: "rgba(0,0,0,0.18)", inset: true },
-    ],
+    backgroundColor: Theme.primaryLight,
   },
-  jarLetter: {
+  image: {
+    width: 48,
+    height: 48,
+    resizeMode: "contain",
+  },
+  initial: {
     fontSize: Theme.fontSize.xl,
-    fontWeight: "800",
-    color: "rgba(255,255,255,0.95)",
+    fontWeight: "700",
+    color: Theme.primary,
   },
-  jarShine: {
-    position: "absolute",
-    left: 8,
-    top: 6,
-    bottom: 6,
-    width: 5,
-    borderRadius: 3,
-    backgroundColor: "rgba(255,255,255,0.35)",
+  info: {
+    flex: 1,
+    gap: Theme.spacing.xs,
+    alignItems: "flex-start",
   },
   name: {
-    marginTop: 4,
-    fontSize: Theme.fontSize.md,
+    fontSize: Theme.fontSize.lg,
     fontWeight: "700",
     color: Theme.text,
   },
   quantity: {
-    fontSize: Theme.fontSize.sm,
+    fontSize: Theme.fontSize.md,
+    fontWeight: "400",
     color: Theme.muted,
   },
   badge: {
-    marginTop: 2,
     paddingHorizontal: Theme.spacing.sm,
     paddingVertical: 2,
     borderRadius: Theme.radius.lg,
   },
   badgeText: {
-    fontSize: 11,
-    fontWeight: "700",
+    fontSize: Theme.fontSize.sm,
+    fontWeight: "600",
   },
   remove: {
-    position: "absolute",
-    top: -4,
-    right: 4,
-    width: 20,
-    height: 20,
-    borderRadius: 10,
+    width: 44,
+    height: 44,
+    marginRight: Theme.spacing.sm,
     alignItems: "center",
     justifyContent: "center",
-    backgroundColor: "rgba(60,80,95,0.55)",
   },
   pressed: {
     opacity: 0.5,

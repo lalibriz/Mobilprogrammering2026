@@ -2,14 +2,13 @@ import { ItemForm } from "@/components/items/ItemForm";
 import { Theme } from "@/constants/theme";
 import { useItems } from "@/contexts/ItemsContext";
 import { useRouter } from "expo-router";
-import { createContext, use, useEffect, useState } from "react";
+import { createContext, use, useState } from "react";
 import {
-  Animated,
-  Keyboard,
   KeyboardAvoidingView,
   Modal,
   Pressable,
   StyleSheet,
+  View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
@@ -21,19 +20,14 @@ type ItemEditorContextData = {
 
 export type Prefill = { name?: string; imageUrl?: string };
 
-/** Hva skjemaet gjør: null = ingenting, "new" = ny vare, ellers varen som redigeres. */
+/** Hva skjemaet gjør: null = lukket, "new" = ny vare, ellers varen som redigeres. */
 type EditorState = null | "new" | { id: string };
 
 const ItemEditorContext = createContext<ItemEditorContextData | null>(null);
 
-// Utenfor skjermen før animasjonen starter; måles på nytt med onLayout
-const INITIAL_SHEET_HEIGHT = 500;
-
 /**
  * Eier skjemaet for å legge til og redigere varer, slik at både
- * bunnlinjen (+) og varekortene (blyantikonet) kan åpne det.
- *
- * Bakgrunnen tones inn, mens selve skjemaet glir opp nedenfra.
+ * bunnlinjen (+) og varekortene kan åpne det.
  */
 export function ItemEditorProvider({
   children,
@@ -44,92 +38,46 @@ export function ItemEditorProvider({
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const [state, setState] = useState<EditorState>(null);
-  const [visible, setVisible] = useState(false);
   const [prefill, setPrefill] = useState<Prefill>();
-  const [sheetHeight, setSheetHeight] = useState(INITIAL_SHEET_HEIGHT);
-  // 0 = lukket, 1 = åpen
-  const [progress] = useState(() => new Animated.Value(0));
 
   const editing =
     state && state !== "new" ? items.find((i) => i.id === state.id) : undefined;
 
-  useEffect(() => {
-    if (!visible) return;
-
-    Animated.timing(progress, {
-      toValue: 1,
-      duration: 250,
-      useNativeDriver: true,
-    }).start();
-  }, [visible, progress]);
-
-  function open(next: EditorState) {
-    setState(next);
-    setVisible(true);
+  function close() {
+    setState(null);
+    setPrefill(undefined);
   }
 
-  function close() {
-    Keyboard.dismiss();
-    Animated.timing(progress, {
-      toValue: 0,
-      duration: 200,
-      useNativeDriver: true,
-    }).start(({ finished }) => {
-      if (!finished) return;
-      setVisible(false);
-      setState(null);
-      setPrefill(undefined);
-    });
+  function openAdd(next?: Prefill) {
+    setPrefill(next);
+    setState("new");
+  }
+
+  function openEdit(id: string) {
+    setState({ id });
   }
 
   return (
-    <ItemEditorContext
-      value={{
-        openAdd: (next) => {
-          setPrefill(next);
-          open("new");
-        },
-        openEdit: (id) => open({ id }),
-      }}
-    >
+    <ItemEditorContext value={{ openAdd, openEdit }}>
       {children}
       <Modal
-        visible={visible}
+        visible={state !== null}
         transparent
-        animationType="none"
+        animationType="fade"
         statusBarTranslucent
         navigationBarTranslucent
         onRequestClose={close}
       >
         <KeyboardAvoidingView style={styles.container} behavior="padding">
-          <Animated.View
-            style={[
-              StyleSheet.absoluteFill,
-              styles.backdrop,
-              { opacity: progress },
-            ]}
-          >
-            <Pressable
-              style={StyleSheet.absoluteFill}
-              onPress={close}
-              accessibilityLabel="Lukk"
-            />
-          </Animated.View>
-          <Animated.View
-            onLayout={(e) => setSheetHeight(e.nativeEvent.layout.height)}
+          <Pressable
+            style={[StyleSheet.absoluteFill, styles.backdrop]}
+            onPress={close}
+            accessibilityLabel="Lukk"
+          />
+          <View
             style={[
               styles.sheet,
               { paddingBottom: insets.bottom + Theme.spacing.lg },
-              {
-                transform: [
-                  {
-                    translateY: progress.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [sheetHeight, 0],
-                    }),
-                  },
-                ],
-              },
             ]}
           >
             <ItemForm
@@ -147,7 +95,7 @@ export function ItemEditorProvider({
                 router.navigate("/scanner");
               }}
             />
-          </Animated.View>
+          </View>
         </KeyboardAvoidingView>
       </Modal>
     </ItemEditorContext>
@@ -170,7 +118,7 @@ const styles = StyleSheet.create({
     justifyContent: "flex-end",
   },
   backdrop: {
-    backgroundColor: "rgba(25,30,70,0.45)",
+    backgroundColor: "rgba(1,42,51,0.5)",
   },
   sheet: {
     padding: Theme.spacing.lg,
