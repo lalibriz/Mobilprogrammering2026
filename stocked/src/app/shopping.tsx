@@ -1,3 +1,4 @@
+import { ItemLayout } from "@/components/items/ItemLayout";
 import { useEffect, useState } from "react";
 import {
   ScrollView,
@@ -96,11 +97,7 @@ export default function ShoppingScreen() {
   }
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.content}
-      keyboardShouldPersistTaps="handled"
-    >
+    <ItemLayout>
       <View style={styles.header}>
         <Text style={styles.title}>Handleliste</Text>
         <Text style={styles.subtitle}>
@@ -115,9 +112,10 @@ export default function ShoppingScreen() {
           items={items}
           onToggle={toggleItem}
           onRemove={removeItem}
-        />
+          onClear={() => setItems([])}
+/>
       )}
-    </ScrollView>
+    </ItemLayout>
   );
 }
 
