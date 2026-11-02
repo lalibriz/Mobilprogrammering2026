@@ -1,12 +1,11 @@
 import { DateField } from "@/components/items/DateField";
 import { Icon } from "@/components/shared/Icon";
-import { Theme } from "@/constants/theme";
+import { makeStyles, useTheme } from "@/contexts/ThemeContext";
 import { addDays } from "@/utils/expiry";
 import { ItemSchema, type Item } from "@/utils/item-schema";
 import { useState } from "react";
 import {
   Pressable,
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -37,6 +36,7 @@ function Field({
   style?: StyleProp<ViewStyle>;
   children: React.ReactNode;
 }) {
+  const styles = useStyles();
   return (
     <View style={[styles.field, style]}>
       <Text style={styles.label}>{label}</Text>
@@ -54,6 +54,7 @@ function StepButton({
   symbol: string;
   onPress: () => void;
 }) {
+  const styles = useStyles();
   return (
     <Pressable
       style={({ pressed }) => [styles.step, pressed && styles.pressed]}
@@ -74,6 +75,8 @@ export function ItemForm({
   initialName,
   initialImageUrl,
 }: ItemFormProps) {
+  const styles = useStyles();
+  const Theme = useTheme();
   const [name, setName] = useState(editing?.name ?? initialName ?? "");
   const [quantity, setQuantity] = useState(
     editing ? String(editing.quantity) : "1",
@@ -172,7 +175,7 @@ export function ItemForm({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((Theme) => ({
   container: {
     gap: Theme.spacing.md,
   },
@@ -277,4 +280,4 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.7,
   },
-});
+}));

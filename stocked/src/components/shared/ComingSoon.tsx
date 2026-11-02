@@ -1,6 +1,6 @@
 import { Icon, type IconName } from "@/components/shared/Icon";
-import { Theme } from "@/constants/theme";
-import { StyleSheet, Text, View } from "react-native";
+import { makeStyles, useTheme } from "@/contexts/ThemeContext";
+import { Text, View } from "react-native";
 
 type ComingSoonProps = {
   icon: IconName;
@@ -8,6 +8,8 @@ type ComingSoonProps = {
 };
 
 export function ComingSoon({ icon, title }: ComingSoonProps) {
+  const styles = useStyles();
+  const Theme = useTheme();
   return (
     <View style={styles.container}>
       <Icon name={icon} size={48} color={Theme.primary} />
@@ -17,7 +19,7 @@ export function ComingSoon({ icon, title }: ComingSoonProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((Theme) => ({
   container: {
     flex: 1,
     alignItems: "center",
@@ -35,4 +37,4 @@ const styles = StyleSheet.create({
     fontSize: Theme.fontSize.md,
     color: Theme.muted,
   },
-});
+}));

@@ -1,6 +1,6 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
-import { Theme } from "@/constants/theme";
+import { makeStyles } from "@/contexts/ThemeContext";
 import {
   ShoppingItem,
   ShoppingItemData,
@@ -19,6 +19,7 @@ export function ShoppingList({
   onRemove,
   onClear,
 }: Props) {
+  const styles = useStyles();
   const remaining = items.filter(
     (item) => !item.checked
   ).length;
@@ -69,7 +70,7 @@ export function ShoppingList({
 );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((Theme) => ({
   container: {
     gap: Theme.spacing.md,
   },
@@ -124,4 +125,4 @@ clearText: {
   fontWeight: "600",
   fontSize: 15,
 },
-});
+}));

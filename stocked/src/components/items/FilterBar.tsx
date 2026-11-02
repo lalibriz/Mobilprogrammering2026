@@ -1,7 +1,7 @@
-import { Theme } from "@/constants/theme";
+import { makeStyles } from "@/contexts/ThemeContext";
 import { expiryStatus, type ExpiryStatus } from "@/utils/expiry";
 import type { Item } from "@/utils/item-schema";
-import { Pressable, ScrollView, StyleSheet, Text, View } from "react-native";
+import { Pressable, ScrollView, Text, View } from "react-native";
 
 type FilterBarProps = {
   items: Item[];
@@ -24,6 +24,7 @@ type ChipProps = {
 };
 
 function Chip({ label, count, active, onPress }: ChipProps) {
+  const styles = useStyles();
   return (
     <Pressable
       style={({ pressed }) => [
@@ -51,6 +52,7 @@ export function FilterBar({
   onToggle,
   onClear,
 }: FilterBarProps) {
+  const styles = useStyles();
   return (
     <ScrollView
       horizontal
@@ -77,7 +79,7 @@ export function FilterBar({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((Theme) => ({
   // Luft rundt chipene slik at skyggene ikke klippes av ScrollView
   scroll: {
     flexGrow: 0,
@@ -129,4 +131,4 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.7,
   },
-});
+}));

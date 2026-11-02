@@ -1,7 +1,7 @@
 import { Icon } from "@/components/shared/Icon";
-import { Theme } from "@/constants/theme";
+import { makeStyles, useTheme } from "@/contexts/ThemeContext";
 import { useState } from "react";
-import { Pressable, StyleSheet, Text, TextInput, View } from "react-native";
+import { Pressable, Text, TextInput, View } from "react-native";
 
 type ItemHeaderProps = {
   name: string;
@@ -10,6 +10,8 @@ type ItemHeaderProps = {
 };
 
 export function ItemHeader({ name, onRename, count }: ItemHeaderProps) {
+  const styles = useStyles();
+  const Theme = useTheme();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(name);
 
@@ -59,7 +61,7 @@ export function ItemHeader({ name, onRename, count }: ItemHeaderProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((Theme) => ({
   container: {
     flexDirection: "row",
     alignItems: "center",
@@ -94,4 +96,4 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.7,
   },
-});
+}));

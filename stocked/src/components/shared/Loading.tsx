@@ -1,12 +1,14 @@
-import { View, Text, ActivityIndicator, StyleSheet } from "react-native";
+import { View, Text, ActivityIndicator } from "react-native";
 
-import { Theme } from "@/constants/theme";
+import { makeStyles, useTheme } from "@/contexts/ThemeContext";
 
 type LoadingProps = {
   label?: string;
 };
 
 export function Loading({ label = "Laster..." }: LoadingProps) {
+  const styles = useStyles();
+  const Theme = useTheme();
   return (
     <View style={styles.container}>
       <ActivityIndicator size="large" color={Theme.primary} />
@@ -15,7 +17,7 @@ export function Loading({ label = "Laster..." }: LoadingProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((Theme) => ({
   container: {
     // alignSelf i stedet for flex: 1 - boksen skal ta plassen den trenger,
     // også når den ligger inne i en ScrollView uten fast høyde.
@@ -35,4 +37,4 @@ const styles = StyleSheet.create({
     color: Theme.primary,
     fontWeight: "bold",
   },
-});
+}));

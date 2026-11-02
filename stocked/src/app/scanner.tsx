@@ -1,5 +1,5 @@
 import { Icon } from "@/components/shared/Icon";
-import { Theme } from "@/constants/theme";
+import { makeStyles, useTheme } from "@/contexts/ThemeContext";
 import { useItemEditor, type Prefill } from "@/contexts/ItemEditorContext";
 import { useAudioPlayer } from "expo-audio";
 import {
@@ -32,6 +32,8 @@ async function lookup(code: string): Promise<Prefill> {
 const GUIDE = { width: 280, height: 160 };
 
 export default function Scanner() {
+  const styles = useStyles();
+  const Theme = useTheme();
   const [permission, requestPermission] = useCameraPermissions();
   const { openAdd } = useItemEditor();
   const router = useRouter();
@@ -115,7 +117,7 @@ export default function Scanner() {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((Theme) => ({
   camera: {
     flex: 1,
   },
@@ -159,4 +161,4 @@ const styles = StyleSheet.create({
     color: Theme.textInverted,
     fontWeight: "700",
   },
-});
+}));

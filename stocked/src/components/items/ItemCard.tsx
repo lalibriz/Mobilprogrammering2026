@@ -1,8 +1,10 @@
 import { Icon } from "@/components/shared/Icon";
-import { Theme } from "@/constants/theme";
+import type { ThemeType } from "@/constants/theme";
+import { makeStyles, useTheme } from "@/contexts/ThemeContext";
 import { expiryLabel, expiryStatus, type ExpiryStatus } from "@/utils/expiry";
 import type { Item } from "@/utils/item-schema";
-import { Image, Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
+import { Image } from "expo-image";
 
 type ItemCardProps = {
   item: Item;
@@ -10,28 +12,31 @@ type ItemCardProps = {
   onRemove: (id: string) => void;
 };
 
-const COLORS: Record<ExpiryStatus, { accent: string; bg: string; fg: string }> =
-  {
-    expired: {
-      accent: Theme.danger,
-      bg: Theme.dangerLight,
-      fg: Theme.danger,
-    },
-    soon: {
-      accent: Theme.warning,
-      bg: Theme.warningLight,
-      fg: Theme.warningDark,
-    },
-    fresh: {
-      accent: Theme.success,
-      bg: Theme.successLight,
-      fg: Theme.success,
-    },
-  };
+const colorsFor = (
+  Theme: ThemeType,
+): Record<ExpiryStatus, { accent: string; bg: string; fg: string }> => ({
+  expired: {
+    accent: Theme.danger,
+    bg: Theme.dangerLight,
+    fg: Theme.danger,
+  },
+  soon: {
+    accent: Theme.warning,
+    bg: Theme.warningLight,
+    fg: Theme.warningDark,
+  },
+  fresh: {
+    accent: Theme.success,
+    bg: Theme.successLight,
+    fg: Theme.success,
+  },
+});
 
 export function ItemCard({ item, onEdit, onRemove }: ItemCardProps) {
+  const styles = useStyles();
+  const Theme = useTheme();
   const { id, name, quantity, expiresAt, imageUrl } = item;
-  const colors = COLORS[expiryStatus(expiresAt)];
+  const colors = colorsFor(Theme)[expiryStatus(expiresAt)];
 
   return (
     <View style={styles.container}>
@@ -70,7 +75,7 @@ export function ItemCard({ item, onEdit, onRemove }: ItemCardProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((Theme) => ({
   container: {
     flexDirection: "row",
     alignItems: "center",
@@ -143,4 +148,4 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.5,
   },
-});
+}));

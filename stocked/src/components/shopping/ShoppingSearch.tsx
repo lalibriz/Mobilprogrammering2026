@@ -2,13 +2,12 @@ import { useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
-  StyleSheet,
   Text,
   TextInput,
   View,
 } from "react-native";
 
-import { Theme } from "@/constants/theme";
+import { makeStyles, useTheme } from "@/contexts/ThemeContext";
 import {
   searchProducts,
   type FoodProduct,
@@ -19,6 +18,8 @@ type Props = {
 };
 
 export function ShoppingSearch({ onAdd }: Props) {
+  const styles = useStyles();
+  const Theme = useTheme();
   const [query, setQuery] = useState("");
   const [products, setProducts] = useState<FoodProduct[]>([]);
   const [loading, setLoading] = useState(false);
@@ -108,7 +109,7 @@ export function ShoppingSearch({ onAdd }: Props) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((Theme) => ({
   container: {
     backgroundColor: Theme.surface,
     padding: Theme.spacing.lg,
@@ -165,4 +166,4 @@ const styles = StyleSheet.create({
     color: Theme.danger,
     fontSize: Theme.fontSize.md,
   },
-});
+}));
