@@ -1,5 +1,5 @@
 import { ItemForm } from "@/components/items/ItemForm";
-import { Theme } from "@/constants/theme";
+import { makeStyles, useTheme } from "@/contexts/ThemeContext";
 import { useItems } from "@/contexts/ItemsContext";
 import { useRouter } from "expo-router";
 import { createContext, use, useState } from "react";
@@ -34,6 +34,8 @@ export function ItemEditorProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const styles = useStyles();
+  const Theme = useTheme();
   const { items, add, update } = useItems();
   const insets = useSafeAreaInsets();
   const router = useRouter();
@@ -112,7 +114,7 @@ export function useItemEditor() {
   return context;
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((Theme) => ({
   container: {
     flex: 1,
     justifyContent: "flex-end",
@@ -126,4 +128,4 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 32,
     borderTopRightRadius: 32,
   },
-});
+}));

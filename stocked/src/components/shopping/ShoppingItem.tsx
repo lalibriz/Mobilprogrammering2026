@@ -1,11 +1,10 @@
 import {
   Pressable,
-  StyleSheet,
   Text,
   View,
 } from "react-native";
 
-import { Theme } from "@/constants/theme";
+import { makeStyles } from "@/contexts/ThemeContext";
 
 export type ShoppingItemData = {
   id: string;
@@ -24,6 +23,7 @@ export function ShoppingItem({
   onToggle,
   onRemove,
 }: Props) {
+  const styles = useStyles();
   return (
     <View style={styles.container}>
       <Pressable
@@ -65,7 +65,7 @@ export function ShoppingItem({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((Theme) => ({
   container: {
     flexDirection: "row",
     alignItems: "center",
@@ -110,4 +110,4 @@ const styles = StyleSheet.create({
     color: Theme.danger,
     fontSize: 18,
   },
-});
+}));

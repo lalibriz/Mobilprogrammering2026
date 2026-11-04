@@ -6,7 +6,7 @@
  * komponenter, og da er det umulig å endre uttrykket ett sted. Alle
  * StyleSheet-objekter i appen leser fra dette objektet.
  */
-export const Theme = {
+export const LightTheme = {
   // Farger
   primary: "#023c41",
   primaryLight: "#e3ece3",
@@ -61,4 +61,29 @@ export const Theme = {
     well: "inset 0px 2px 4px rgba(1,42,51,0.14)",
     button: "0px 8px 16px rgba(38,8,3,0.35)",
   },
-} as const;
+};
+
+export type ThemeType = typeof LightTheme;
+
+// Mørk variant: samme struktur, bare fargene byttes. Skygger er allerede
+// mørke og leses fine mot mørk bakgrunn.
+export const DarkTheme: ThemeType = {
+  ...LightTheme,
+  primary: "#3d8f8a",
+  primaryLight: "#18302f",
+  contrast: "#c9553d",
+  danger: "#e07a68",
+  dangerLight: "#3a1f1b",
+  success: "#6fbf86",
+  successLight: "#1c3025",
+  warning: "#e0a63c",
+  warningDark: "#e8bf6e",
+  warningLight: "#3a2e14",
+  muted: "#93a8a9",
+  border: "#2c3f40",
+  background: "#0e1819",
+  pill: "#1a2b2c",
+  raised: "#2a4143",
+  surface: "#162425",
+  text: "#e4eeee",
+};

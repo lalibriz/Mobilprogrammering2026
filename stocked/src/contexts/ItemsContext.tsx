@@ -12,6 +12,7 @@ type ItemsContextData = {
   add: (item: Omit<Item, "id">) => void;
   update: (id: string, item: Omit<Item, "id">) => void;
   remove: (id: string) => void;
+  resetItems: () => void;
 };
 
 const ItemsContext = createContext<ItemsContextData | null>(null);
@@ -80,10 +81,15 @@ export function ItemsProvider({ children }: { children: React.ReactNode }) {
     setItems((prev) => prev.filter((item) => item.id !== id));
   }
 
+  // Setter varene tilbake til dummydataene
+  function resetItems() {
+    setItems(ITEMS);
+  }
+
   if (!loaded) return <Loading />;
 
   return (
-    <ItemsContext value={{ fridgeName, rename, items, add, update, remove }}>
+    <ItemsContext value={{ fridgeName, rename, items, add, update, remove, resetItems }}>
       {children}
     </ItemsContext>
   );

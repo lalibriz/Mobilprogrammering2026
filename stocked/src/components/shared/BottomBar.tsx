@@ -1,8 +1,8 @@
 import { Icon, type IconName } from "@/components/shared/Icon";
-import { Theme } from "@/constants/theme";
+import { makeStyles, useTheme } from "@/contexts/ThemeContext";
 import { useItemEditor } from "@/contexts/ItemEditorContext";
 import { usePathname, useRouter } from "expo-router";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type BarButtonProps = {
@@ -13,6 +13,8 @@ type BarButtonProps = {
 };
 
 function BarButton({ icon, label, active = false, onPress }: BarButtonProps) {
+  const styles = useStyles();
+  const Theme = useTheme();
   return (
     <Pressable
       style={styles.button}
@@ -38,6 +40,8 @@ function BarButton({ icon, label, active = false, onPress }: BarButtonProps) {
 }
 
 export function BottomBar() {
+  const styles = useStyles();
+  const Theme = useTheme();
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const pathname = usePathname();
@@ -91,7 +95,7 @@ export function BottomBar() {
 
 const SIZE = 56;
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((Theme) => ({
   bar: {
     flexDirection: "row",
     alignItems: "center",
@@ -144,4 +148,4 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.6,
   },
-});
+}));

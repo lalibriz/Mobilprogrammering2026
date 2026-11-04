@@ -1,9 +1,9 @@
 import { Icon } from "@/components/shared/Icon";
-import { Theme } from "@/constants/theme";
+import { makeStyles, useTheme } from "@/contexts/ThemeContext";
 import { formatDate, parseDate } from "@/utils/expiry";
 import { DateTimePicker } from "@expo/ui/community/datetime-picker";
 import { useState } from "react";
-import { Platform, Pressable, StyleSheet, Text, View } from "react-native";
+import { Platform, Pressable, Text, View } from "react-native";
 
 type DateFieldProps = {
   /** "ÅÅÅÅ-MM-DD" */
@@ -16,6 +16,8 @@ type DateFieldProps = {
  * feltet som en knapp som åpner kalenderdialogen.
  */
 export function DateField({ value, onChange }: DateFieldProps) {
+  const styles = useStyles();
+  const Theme = useTheme();
   const [open, setOpen] = useState(false);
   const date = parseDate(value);
 
@@ -71,7 +73,7 @@ export function DateField({ value, onChange }: DateFieldProps) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((Theme) => ({
   field: {
     // Samme høyde som tekstfeltene ved siden av
     minHeight: 48,
@@ -95,4 +97,4 @@ const styles = StyleSheet.create({
   text: {
     color: Theme.text,
   },
-});
+}));

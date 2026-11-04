@@ -1,12 +1,12 @@
 import { Icon } from "@/components/shared/Icon";
-import { Theme } from "@/constants/theme";
+import { makeStyles, useTheme } from "@/contexts/ThemeContext";
 import {
   daysUntilExpiry,
   expiryStatus,
   type ExpiryStatus,
 } from "@/utils/expiry";
 import type { Item } from "@/utils/item-schema";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 import { ItemCard } from "./ItemCard";
 
 type ItemListProps = {
@@ -24,6 +24,8 @@ export function ItemList({
   onAdd,
   activeFilters = [],
 }: ItemListProps) {
+  const styles = useStyles();
+  const Theme = useTheme();
   if (items.length === 0) {
     return (
       <View style={styles.empty}>
@@ -73,7 +75,7 @@ export function ItemList({
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((Theme) => ({
   container: {
     gap: Theme.spacing.md,
   },
@@ -105,4 +107,4 @@ const styles = StyleSheet.create({
   pressed: {
     opacity: 0.7,
   },
-});
+}));

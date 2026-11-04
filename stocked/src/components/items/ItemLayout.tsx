@@ -1,8 +1,10 @@
-import { Theme } from "@/constants/theme";
-import { ScrollView, StyleSheet } from "react-native";
+import { makeStyles, useTheme } from "@/contexts/ThemeContext";
+import { ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 export function ItemLayout({ children }: { children: React.ReactNode }) {
+  const styles = useStyles();
+  const Theme = useTheme();
   const insets = useSafeAreaInsets();
 
   return (
@@ -19,7 +21,7 @@ export function ItemLayout({ children }: { children: React.ReactNode }) {
   );
 }
 
-const styles = StyleSheet.create({
+const useStyles = makeStyles((Theme) => ({
   scroll: {
     flex: 1,
     backgroundColor: Theme.background,
@@ -28,4 +30,4 @@ const styles = StyleSheet.create({
     gap: Theme.spacing.lg,
     padding: Theme.spacing.lg,
   },
-});
+}));
