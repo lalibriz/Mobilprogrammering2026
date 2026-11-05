@@ -16,13 +16,19 @@ export async function searchProducts(
     fields: "code,product_name,brands",
   });
 
+  await new Promise(resolve => setTimeout(resolve, 1000));
+
   const response = await fetch(
-    `https://world.openfoodfacts.org/cgi/search.pl?${params.toString()}`
-  );
+  `https://world.openfoodfacts.org/cgi/search.pl?${params.toString()}`,
+  {
+    signal: AbortSignal.timeout(10000),
+  }
+);
 
   if (!response.ok) {
-    throw new Error("Kunne ikke hente produkter");
-  }
+  console.log("API-feil:", response.status, response.statusText);
+  throw new Error("Kunne ikke hente produkter");
+}
 
   const data = await response.json();
 
