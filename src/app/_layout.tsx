@@ -29,7 +29,7 @@ function Shell() {
         <Stack.Protected guard={!!user}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="scanner" />
-          <Stack.Screen name="recipes/[id]" />
+          <Stack.Screen name="recipes" />
         </Stack.Protected>
       </Stack>
     </View>
