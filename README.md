@@ -41,3 +41,38 @@ Logg inn → legg til en vare med **+** (navn, antall, utløpsdato) → varen vi
 1. **Context for lokal tilstand, TanStack Query for alt som kommer fra nett.** Varer, handleliste og innlogging er lokale og bor i contexts. Oppskrifter hentes med `useQuery` (caching, lasting og feil/«prøv igjen» uten egen state).
 2. **Zod er kilden til sannhet for data over grenser.** `Item` er typen avledet fra skjemaet, og samme skjema validerer skjemaet i appen og dataene som leses fra AsyncStorage.
 3. **Responsivt via `useWindowDimensions` og safe-area.** Lister er `FlatList` med to kolonner i bred visning/landscape, og innholdet har maks bredde. Appen støtter portrett og landscape.
+
+# KI avtale
+Avtale om bruk av KI
+1. Hva bruker vi KI til?
+KI kan brukes som hjelpemiddel i arbeidsprosessen, for eksempel til:
+
+• Oppsett og struktur
+• Forklaringer
+• Feilsøking
+• Gjennomgang av egen kode
+• Forslag til forbedringer og alternative løsninger
+
+2. Hva gjør vi selv, alltid?
+Det som skal sitte til eksamen, må dere kunne uten KI.
+
+Det gjelder spesielt:
+
+• Grunnleggende programmering
+• Forståelse av kode
+• Viktige konsepter og begreper fra kurset
+• Å kunne lese, forklare og endre kode
+• Å kunne finne og rette feil
+• Å kunne begrunne valg dere gjør i løsningen
+
+KI skal hjelpe dere å lære, ikke erstatte læringen.
+
+3. Hvordan vet vi at svaret er riktig?
+KI kan ta feil. Derfor skal dere alltid verifisere svarene.
+
+Spør:
+
+• Hvem kan bekrefte at svaret er riktig?
+• Hva kan jeg sjekke svaret mot?
+• Har jeg testet koden selv?
+• Stemmer det med pensum, dokumentasjon eller det vi har gjennomgått?
